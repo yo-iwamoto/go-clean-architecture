@@ -1,22 +1,21 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/labstack/echo/v4"
+	"github.com/you-5805/learning-go/internal/delivery"
+	"github.com/you-5805/learning-go/internal/usecase"
 )
 
 func main() {
 	e := echo.New()
 
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
+	postUsecase := usecase.NewPostUsecase()
+	postHandler := delivery.NewPostHandler(postUsecase)
+
+	e.GET("/posts", func(c echo.Context) error {
+		postHandler.GetPosts(c)
+		return nil
 	})
 
-	e.GET("/posts/:id", func(c echo.Context) error {
-		id := c.Param("id")
-		return c.String(http.StatusOK, "Post ID: "+id)
-	})
-
-	e.Start(":8080")
+	e.Logger.Fatal(e.Start(":8080"))
 }
